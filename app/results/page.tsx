@@ -10,13 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getHistoryEntry, HistoryEntry, updateHistoryEntryWithConfidence } from "@/lib/storage";
 import { SKILL_CATEGORIES, SkillCategory } from "@/lib/skills";
 import { recalculateReadinessScore, getWeakSkills } from "@/lib/analysis";
-import { 
-  Sparkles, 
-  Building2, 
-  Briefcase, 
-  Calendar, 
-  Target, 
-  CheckCircle2, 
+import {
+  Sparkles,
+  Building2,
+  Briefcase,
+  Calendar,
+  Target,
+  CheckCircle2,
   Lightbulb,
   ArrowLeft,
   History,
@@ -83,13 +83,13 @@ function CircularProgress({ score, maxScore }: { score: number; maxScore: number
 }
 
 // Interactive Skill Tag Component
-function InteractiveSkillTag({ 
-  skill, 
-  category, 
+function InteractiveSkillTag({
+  skill,
+  category,
   confidence,
   onToggle
-}: { 
-  skill: string; 
+}: {
+  skill: string;
   category: string;
   confidence: "know" | "practice";
   onToggle: (skill: string) => void;
@@ -173,6 +173,7 @@ function ResultsContent() {
   const [skillConfidenceMap, setSkillConfidenceMap] = useState<Record<string, "know" | "practice">>({});
   const [currentScore, setCurrentScore] = useState<number>(0);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<string>("skills");
 
   useEffect(() => {
     const id = searchParams.get("id");
@@ -248,20 +249,20 @@ function ResultsContent() {
   // Handle skill confidence toggle
   const handleSkillToggle = (skill: string) => {
     if (!entry) return;
-    
+
     setSkillConfidenceMap(prev => {
       const newMap: Record<string, "know" | "practice"> = {
         ...prev,
         [skill]: prev[skill] === "know" ? "practice" : "know"
       };
-      
+
       // Recalculate score
       const newScore = recalculateReadinessScore(entry.readinessScore, newMap);
       setCurrentScore(newScore);
-      
+
       // Save to localStorage
       updateHistoryEntryWithConfidence(entry.id, newMap, newScore);
-      
+
       return newMap;
     });
   };
@@ -269,10 +270,10 @@ function ResultsContent() {
   // Export functions
   const copyPlan = async () => {
     if (!entry) return;
-    const planText = entry.plan.map(day => 
+    const planText = entry.plan.map(day =>
       `Day ${day.day}: ${day.title}\n${day.tasks.map(task => `- ${task}`).join('\n')}`
     ).join('\n\n');
-    
+
     try {
       await navigator.clipboard.writeText(planText);
       setCopiedItem('plan');
@@ -284,10 +285,10 @@ function ResultsContent() {
 
   const copyChecklist = async () => {
     if (!entry) return;
-    const checklistText = entry.checklist.map(round => 
+    const checklistText = entry.checklist.map(round =>
       `Round ${round.round}: ${round.title}\n${round.items.map(item => `- ${item}`).join('\n')}`
     ).join('\n\n');
-    
+
     try {
       await navigator.clipboard.writeText(checklistText);
       setCopiedItem('checklist');
@@ -300,7 +301,7 @@ function ResultsContent() {
   const copyQuestions = async () => {
     if (!entry) return;
     const questionsText = entry.questions.map((q, i) => `${i + 1}. ${q}`).join('\n');
-    
+
     try {
       await navigator.clipboard.writeText(questionsText);
       setCopiedItem('questions');
@@ -312,7 +313,7 @@ function ResultsContent() {
 
   const downloadAll = () => {
     if (!entry) return;
-    
+
     const content = `
 PLACEMENT READINESS ANALYSIS
 ============================
@@ -323,19 +324,19 @@ Readiness Score: ${currentScore}/100
 
 KEY SKILLS EXTRACTED:
 ${Object.entries(entry.extractedSkills)
-  .filter(([_, skills]) => skills.length > 0)
-  .map(([category, skills]) => `${SKILL_CATEGORIES[category as SkillCategory].name}: ${skills.join(', ')}`)
-  .join('\n')}
+        .filter(([_, skills]) => skills.length > 0)
+        .map(([category, skills]) => `${SKILL_CATEGORIES[category as SkillCategory].name}: ${skills.join(', ')}`)
+        .join('\n')}
 
 7-DAY PREPARATION PLAN:
-${entry.plan.map(day => 
-  `Day ${day.day}: ${day.title}\n${day.tasks.map(task => `- ${task}`).join('\n')}`
-).join('\n\n')}
+${entry.plan.map(day =>
+          `Day ${day.day}: ${day.title}\n${day.tasks.map(task => `- ${task}`).join('\n')}`
+        ).join('\n\n')}
 
 ROUND CHECKLIST:
-${entry.checklist.map(round => 
-  `Round ${round.round}: ${round.title}\n${round.items.map(item => `- ${item}`).join('\n')}`
-).join('\n\n')}
+${entry.checklist.map(round =>
+          `Round ${round.round}: ${round.title}\n${round.items.map(item => `- ${item}`).join('\n')}`
+        ).join('\n\n')}
 
 INTERVIEW QUESTIONS:
 ${entry.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
@@ -428,7 +429,7 @@ ${entry.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="skills" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="skills">Skills</TabsTrigger>
             <TabsTrigger value="checklist">Checklist</TabsTrigger>
@@ -490,33 +491,33 @@ ${entry.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
                         General Fresher Stack
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        <InteractiveSkillTag 
-                          skill="DSA" 
-                          category="coreCS" 
+                        <InteractiveSkillTag
+                          skill="DSA"
+                          category="coreCS"
                           confidence={skillConfidenceMap["DSA"] || "practice"}
                           onToggle={handleSkillToggle}
                         />
-                        <InteractiveSkillTag 
-                          skill="OOP" 
-                          category="coreCS" 
+                        <InteractiveSkillTag
+                          skill="OOP"
+                          category="coreCS"
                           confidence={skillConfidenceMap["OOP"] || "practice"}
                           onToggle={handleSkillToggle}
                         />
-                        <InteractiveSkillTag 
-                          skill="DBMS" 
-                          category="coreCS" 
+                        <InteractiveSkillTag
+                          skill="DBMS"
+                          category="coreCS"
                           confidence={skillConfidenceMap["DBMS"] || "practice"}
                           onToggle={handleSkillToggle}
                         />
-                        <InteractiveSkillTag 
-                          skill="Java/Python/C++" 
-                          category="languages" 
+                        <InteractiveSkillTag
+                          skill="Java/Python/C++"
+                          category="languages"
                           confidence={skillConfidenceMap["Java/Python/C++"] || "practice"}
                           onToggle={handleSkillToggle}
                         />
-                        <InteractiveSkillTag 
-                          skill="Basic Web" 
-                          category="web" 
+                        <InteractiveSkillTag
+                          skill="Basic Web"
+                          category="web"
                           confidence={skillConfidenceMap["Basic Web"] || "practice"}
                           onToggle={handleSkillToggle}
                         />
@@ -612,7 +613,7 @@ ${entry.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button 
+              <Button
                 onClick={copyPlan}
                 variant={copiedItem === 'plan' ? "default" : "outline"}
                 className="w-full"
@@ -629,8 +630,8 @@ ${entry.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
                   </>
                 )}
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={copyChecklist}
                 variant={copiedItem === 'checklist' ? "default" : "outline"}
                 className="w-full"
@@ -647,8 +648,8 @@ ${entry.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
                   </>
                 )}
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={copyQuestions}
                 variant={copiedItem === 'questions' ? "default" : "outline"}
                 className="w-full"
@@ -665,8 +666,8 @@ ${entry.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
                   </>
                 )}
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={downloadAll}
                 variant="default"
                 className="w-full"
@@ -695,7 +696,7 @@ ${entry.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
                 {(() => {
                   const weakSkills = getWeakSkills(skillConfidenceMap);
                   const topWeakSkills = weakSkills.slice(0, 3);
-                  
+
                   if (topWeakSkills.length > 0) {
                     return (
                       <>
@@ -715,17 +716,18 @@ ${entry.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
                             <Play className="h-4 w-4" />
                             Start Day 1 plan now to strengthen these skills
                           </p>
-                          <Button 
+                          <Button
                             onClick={() => {
-                              // Scroll to Day 1 plan
-                              const day1Element = document.getElementById('day-1');
-                              if (day1Element) {
-                                day1Element.scrollIntoView({ behavior: 'smooth' });
-                              } else {
-                                // Fallback: switch to plan tab
-                                const planTab = document.querySelector('[data-state="inactive"][data-value="plan"]') as HTMLElement;
-                                if (planTab) planTab.click();
-                              }
+                              setActiveTab("plan");
+                              setTimeout(() => {
+                                const day1Element = document.getElementById('day-1');
+                                if (day1Element) {
+                                  day1Element.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center'
+                                  });
+                                }
+                              }, 100);
                             }}
                             className="mt-3"
                           >

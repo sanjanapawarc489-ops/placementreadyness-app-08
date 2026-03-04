@@ -292,7 +292,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <ProgressBar current={3} total={10} label="Progress" />
-                <Button className="w-full">Continue</Button>
+                <Button className="w-full" onClick={() => recentEntry ? router.push(`/results?id=${recentEntry.id}`) : router.push("/analyze")}>Continue</Button>
               </div>
             </CardContent>
           </Card>
