@@ -38,77 +38,78 @@ export default function TestPage() {
     const allPassed = passedCount === checklist.length;
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-white">
             {/* Header */}
-            <header className="border-b bg-card">
+            <header className="border-b bg-white">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Sparkles className="h-6 w-6 text-primary" />
-                        <h1 className="text-xl font-bold">PRP Deployment Center</h1>
+                        <h1 className="text-xl font-bold text-[#0F172A]">Deployment Center</h1>
                     </div>
                     <nav className="flex gap-4">
-                        <Button variant="ghost" onClick={() => router.push("/")}>
+                        <Button variant="ghost" className="text-[#0F172A] font-medium" onClick={() => router.push("/dashboard")}>
                             Dashboard
-                        </Button>
-                        <Button variant="ghost" onClick={() => router.push("/prp/08-ship")}>
-                            Ship Platform
                         </Button>
                     </nav>
                 </div>
             </header>
 
-            <div className="max-w-3xl mx-auto p-6">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-foreground mb-2">Test Checklist</h1>
-                    <p className="text-muted-foreground">
+            <div className="max-w-4xl mx-auto p-8 md:p-12">
+                <div className="mb-10">
+                    <h1 className="text-4xl font-extrabold text-[#0F172A] mb-3 tracking-tight">Test Checklist</h1>
+                    <p className="text-[#64748B] text-lg">
                         Complete all tests below before the platform can be processed for shipping.
                     </p>
                 </div>
 
                 {/* Summary Card */}
-                <Card className={`mb-6 border-2 ${allPassed ? 'border-green-500/20 bg-green-500/5' : 'border-amber-500/20 bg-amber-500/5'}`}>
-                    <CardHeader className="pb-3 flex-row items-center justify-between space-y-0">
-                        <div>
-                            <CardTitle className="text-2xl">Tests Passed: {passedCount} / {checklist.length}</CardTitle>
-                            {!allPassed && (
-                                <CardDescription className="text-amber-600 dark:text-amber-400 font-medium mt-1">
-                                    <AlertTriangle className="h-4 w-4 inline mr-2" />
-                                    Fix issues before shipping.
-                                </CardDescription>
-                            )}
-                            {allPassed && (
-                                <CardDescription className="text-green-600 dark:text-green-400 font-medium mt-1">
-                                    <CheckCircle2 className="h-4 w-4 inline mr-2" />
-                                    All systems ready for shipping!
-                                </CardDescription>
-                            )}
+                <Card className={`mb-10 shadow-sm border-none rounded-2xl ${allPassed ? 'bg-[#ECFDF5]' : 'bg-[#FFFBEB]'}`}>
+                    <CardContent className="p-10">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h2 className="text-3xl font-bold text-[#0F172A] mb-2">Tests Passed: {passedCount} / {checklist.length}</h2>
+                                {allPassed ? (
+                                    <div className="flex items-center gap-2 text-[#059669] font-semibold">
+                                        <CheckCircle2 className="h-5 w-5" />
+                                        All systems ready for shipping!
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2 text-[#D97706] font-semibold">
+                                        <AlertTriangle className="h-5 w-5" />
+                                        Complete all tests to unlock shipping.
+                                    </div>
+                                )}
+
+                                <div className="mt-8">
+                                    <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${allPassed ? 'bg-[#10B981] text-white shadow-lg shadow-green-200' : 'bg-white text-[#94A3B8] border-4 border-dashed'}`}>
+                                        <CheckCircle2 className={`h-8 w-8 ${allPassed ? 'opacity-100' : 'opacity-30'}`} />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div className={`p-3 rounded-full ${allPassed ? 'bg-green-500/10 text-green-600' : 'bg-amber-500/10 text-amber-600'}`}>
-                            {allPassed ? <CheckCircle2 className="h-8 w-8" /> : <AlertTriangle className="h-8 w-8" />}
-                        </div>
-                    </CardHeader>
+                    </CardContent>
                 </Card>
 
                 {/* Checklist */}
-                <div className="space-y-4 mb-8">
+                <div className="space-y-6 mb-12">
                     {checklist.map((item) => (
                         <Card
                             key={item.id}
-                            className={`cursor-pointer transition-all hover:bg-card/80 ${item.checked ? 'border-green-500/10 bg-green-500/5' : 'hover:border-primary/20'}`}
+                            className={`border-[#E2E8F0] shadow-sm rounded-2xl cursor-pointer transition-all hover:border-primary/30 group ${item.checked ? 'bg-white' : 'bg-white'}`}
                             onClick={() => handleToggle(item.id)}
                         >
-                            <CardContent className="p-4 flex items-start gap-4">
+                            <CardContent className="p-6 flex items-start gap-5">
                                 <div
-                                    className={`mt-1 flex-shrink-0 w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${item.checked ? 'bg-primary border-primary text-primary-foreground' : 'border-muted-foreground/30 bg-background'}`}
+                                    className={`mt-1 flex-shrink-0 w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all ${item.checked ? 'bg-[#0F172A] border-[#0F172A] text-white' : 'border-[#E2E8F0] group-hover:border-[#94A3B8]'}`}
                                 >
-                                    {item.checked && <CheckCircle2 className="h-4 w-4" />}
+                                    {item.checked && <CheckCircle2 className="h-5 w-5" />}
+                                    {!item.checked && <div className="w-1 h-1 rounded-full bg-slate-200" />}
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className={`font-semibold ${item.checked ? 'text-foreground' : 'text-foreground/90'}`}>
+                                    <h3 className={`text-xl font-bold ${item.checked ? 'text-[#0F172A]' : 'text-[#1E293B]'}`}>
                                         {item.label}
                                     </h3>
                                     {item.hint && (
-                                        <p className="text-sm text-muted-foreground mt-1 font-normal italic">
+                                        <p className="text-[#64748B] mt-2 font-medium italic">
                                             How to test: {item.hint}
                                         </p>
                                     )}
@@ -118,19 +119,20 @@ export default function TestPage() {
                     ))}
                 </div>
 
-                {/* Footer Actions */}
-                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                    <Button variant="outline" onClick={handleReset} className="w-full sm:w-auto">
+                {/* Actions */}
+                <div className="flex items-center justify-between pt-8 border-t border-[#F1F5F9]">
+                    <Button variant="ghost" onClick={handleReset} className="text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50">
                         <RotateCcw className="h-4 w-4 mr-2" />
                         Reset Checklist
                     </Button>
                     <Button
                         disabled={!allPassed}
+                        size="lg"
                         onClick={() => router.push("/prp/08-ship")}
-                        className="w-full sm:w-auto px-8"
+                        className={`px-10 h-14 rounded-xl font-bold shadow-xl transition-all ${allPassed ? 'bg-[#0F172A] hover:bg-[#1E293B] text-white shadow-slate-200 scale-105' : 'bg-[#E2E8F0] text-[#94A3B8] shadow-none cursor-not-allowed'}`}
                     >
-                        Procced to Shipping
-                        <ArrowRight className="h-4 w-4 ml-2" />
+                        Proceed to Shipping
+                        <ArrowRight className="h-5 w-5 ml-2" />
                     </Button>
                 </div>
             </div>
