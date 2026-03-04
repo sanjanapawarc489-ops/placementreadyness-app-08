@@ -39,6 +39,9 @@ export default function LandingPage() {
             <h1 className="text-xl font-bold tracking-tight">Placement Readiness</h1>
           </div>
           <div className="flex items-center gap-4">
+            <Button variant="ghost" className="text-sm" onClick={() => router.push("/dashboard")}>
+              Dashboard
+            </Button>
             <Button variant="ghost" className="text-sm" onClick={() => router.push("/history")}>
               <History className="h-4 w-4 mr-2" />
               History
