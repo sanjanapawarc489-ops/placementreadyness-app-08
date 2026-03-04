@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
     Radar,
     RadarChart,
@@ -13,18 +12,17 @@ import {
     ResponsiveContainer,
 } from "recharts";
 import { getMostRecentEntry } from "@/lib/storage";
-import { Sparkles, Building2, Briefcase, FileText, History, ArrowRight, Plus } from "lucide-react";
 
-// Circular Progress Component
+// Circular Progress Component - Refined to match image precisely
 function CircularProgress({ score, maxScore }: { score: number; maxScore: number }) {
-    const radius = 80;
-    const strokeWidth = 12;
+    const radius = 60;
+    const strokeWidth = 14;
     const normalizedRadius = radius - strokeWidth / 2;
     const circumference = normalizedRadius * 2 * Math.PI;
     const strokeDashoffset = circumference - (score / maxScore) * circumference;
 
     return (
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center py-4">
             <div className="relative">
                 <svg
                     height={radius * 2}
@@ -33,7 +31,7 @@ function CircularProgress({ score, maxScore }: { score: number; maxScore: number
                 >
                     {/* Background circle */}
                     <circle
-                        stroke="hsl(var(--muted))"
+                        stroke="#F1F5F9"
                         fill="transparent"
                         strokeWidth={strokeWidth}
                         r={normalizedRadius}
@@ -42,13 +40,13 @@ function CircularProgress({ score, maxScore }: { score: number; maxScore: number
                     />
                     {/* Progress circle */}
                     <circle
-                        stroke="hsl(var(--primary))"
+                        stroke="#0F172A"
                         fill="transparent"
                         strokeWidth={strokeWidth}
                         strokeDasharray={circumference + " " + circumference}
                         style={{
                             strokeDashoffset,
-                            transition: "stroke-dashoffset 0.5s ease-in-out",
+                            transition: "stroke-dashoffset 0.8s ease-out",
                         }}
                         strokeLinecap="round"
                         r={normalizedRadius}
@@ -57,31 +55,31 @@ function CircularProgress({ score, maxScore }: { score: number; maxScore: number
                     />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-4xl font-bold text-foreground">
+                    <span className="text-3xl font-bold text-[#0F172A]">
                         {score}/{maxScore}
                     </span>
                 </div>
             </div>
-            <p className="mt-4 text-muted-foreground text-sm">Readiness Score</p>
+            <p className="mt-6 text-[#64748B] text-sm">Readiness Score</p>
         </div>
     );
 }
 
-// Progress Bar Component
+// Progress Bar Component - Refined for "Weekly Goals" to match image layout
 function ProgressBar({ current, total, label }: { current: number; total: number; label?: string }) {
     const percentage = (current / total) * 100;
 
     return (
-        <div className="w-full">
+        <div className="w-full mt-4">
             {label && (
-                <div className="flex justify-between mb-2">
-                    <span className="text-sm text-muted-foreground">{label}</span>
-                    <span className="text-sm font-medium">{current}/{total}</span>
+                <div className="flex justify-between items-center mb-3">
+                    <span className="text-sm font-medium text-[#64748B]">{label}</span>
+                    <span className="text-sm font-bold text-[#0F172A]">{current}/{total}</span>
                 </div>
             )}
-            <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+            <div className="w-full h-3 bg-[#F1F5F9] rounded-full overflow-hidden">
                 <div
-                    className="h-full bg-primary rounded-full transition-all duration-300"
+                    className="h-full bg-[#0F172A] rounded-full transition-all duration-500"
                     style={{ width: `${percentage}%` }}
                 />
             </div>
@@ -89,290 +87,93 @@ function ProgressBar({ current, total, label }: { current: number; total: number
     );
 }
 
-// Day Circle Component
-function DayCircle({ day, active }: { day: string; active: boolean }) {
-    return (
-        <div className="flex flex-col items-center gap-1">
-            <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${active
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-            >
-                {day.charAt(0)}
-            </div>
-            <span className="text-xs text-muted-foreground">{day}</span>
-        </div>
-    );
-}
-
-// Assessment Item Component
-function AssessmentItem({
-    title,
-    date,
-    time,
-}: {
-    title: string;
-    date: string;
-    time: string;
-}) {
-    return (
-        <div className="flex items-start gap-3 py-3 border-b border-border last:border-0">
-            <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-            <div className="flex-1">
-                <h4 className="font-medium text-foreground">{title}</h4>
-                <p className="text-sm text-muted-foreground">
-                    {date}, {time}
-                </p>
-            </div>
-        </div>
-    );
-}
-
 export default function Dashboard() {
-    const router = useRouter();
     const [recentEntry, setRecentEntry] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Get the most recent analysis from history
         const entry = getMostRecentEntry();
         setRecentEntry(entry);
-        setLoading(false);
     }, []);
 
-    // Weekly activity data (Mon-Sun)
-    const weeklyActivity = [
-        { day: "Mon", active: true },
-        { day: "Tue", active: true },
-        { day: "Wed", active: true },
-        { day: "Thu", active: false },
-        { day: "Fri", active: true },
-        { day: "Sat", active: false },
-        { day: "Sun", active: false },
-    ];
-
-    // Mock skill data - will be updated with real data when we have an entry
     const skillData = [
-        { subject: "DSA", score: 75, fullMark: 100 },
-        { subject: "System Design", score: 60, fullMark: 100 },
-        { subject: "Communication", score: 80, fullMark: 100 },
-        { subject: "Resume", score: 85, fullMark: 100 },
-        { subject: "Aptitude", score: 70, fullMark: 100 },
+        { subject: "DSA", score: 75 },
+        { subject: "System Design", score: 60 },
+        { subject: "Communication", score: 80 },
+        { subject: "Resume", score: 85 },
+        { subject: "Aptitude", score: 70 },
     ];
 
     return (
-        <div className="min-h-screen bg-background">
-            {/* Header */}
-            <header className="border-b bg-card">
-                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Sparkles className="h-6 w-6 text-primary" />
-                        <h1 className="text-xl font-bold">Placement Readiness</h1>
-                    </div>
-                    <nav className="flex gap-4">
-                        <Button variant="ghost" onClick={() => router.push("/")}>
-                            Home
-                        </Button>
-                        <Button variant="ghost" onClick={() => router.push("/analyze")}>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Analyze JD
-                        </Button>
-                        <Button variant="ghost" onClick={() => router.push("/history")}>
-                            <History className="h-4 w-4 mr-2" />
-                            History
-                        </Button>
-                    </nav>
-                </div>
+        <div className="min-h-screen bg-white p-8 md:p-12">
+            <header className="mb-10 max-w-6xl mx-auto">
+                <h1 className="text-4xl font-extrabold text-[#0F172A] mb-2 tracking-tight">Dashboard</h1>
+                <p className="text-[#64748B] text-lg">
+                    Track your placement preparation progress and analyze job descriptions
+                </p>
             </header>
 
-            <div className="max-w-7xl mx-auto p-6">
-                {/* Welcome Section */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
-                    <p className="text-muted-foreground">
-                        Track your placement preparation progress and analyze job descriptions
-                    </p>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                {/* Overall Readiness */}
+                <Card className="border-[#E2E8F0] shadow-sm rounded-2xl overflow-hidden min-h-[300px] flex flex-col">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-xl font-bold text-[#0F172A]">Overall Readiness</CardTitle>
+                        <CardDescription className="text-[#64748B]">Your placement preparation score</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1 flex flex-col items-center justify-center pt-6 pb-8">
+                        <CircularProgress score={recentEntry?.readinessScore || 35} maxScore={100} />
+                    </CardContent>
+                </Card>
 
-                {/* Recent Analysis Card */}
-                {!loading && recentEntry && (
-                    <Card className="mb-6 border-2 border-primary/20 bg-primary/5">
-                        <CardContent className="p-6">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                                <div>
-                                    <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
-                                        <Sparkles className="h-5 w-5 text-primary" />
-                                        Recent Analysis
-                                    </h2>
-                                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
-                                        <div className="flex items-center gap-1">
-                                            <Building2 className="h-4 w-4" />
-                                            <span>{recentEntry.company}</span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <Briefcase className="h-4 w-4" />
-                                            <span>{recentEntry.role}</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-muted-foreground">
-                                        Click below to view your detailed analysis and preparation plan
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="text-center">
-                                        <div className="text-3xl font-bold text-primary">{recentEntry.readinessScore}</div>
-                                        <div className="text-xs text-muted-foreground">Readiness Score</div>
-                                    </div>
-                                    <Button onClick={() => router.push(`/results?id=${recentEntry.id}`)}>
-                                        View Details
-                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* 2-column grid layout */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* 1. Overall Readiness */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Overall Readiness</CardTitle>
-                            <CardDescription>Your placement preparation score</CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex justify-center py-6">
-                            {recentEntry ? (
-                                <CircularProgress score={recentEntry.readinessScore} maxScore={100} />
-                            ) : (
-                                <CircularProgress score={35} maxScore={100} />
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    {/* 2. Skill Breakdown */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Skill Breakdown</CardTitle>
-                            <CardDescription>Performance across different areas</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="h-64 w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <RadarChart cx="50%" cy="50%" outerRadius="70%" data={skillData}>
-                                        <PolarGrid />
-                                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12 }} />
-                                        <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} />
-                                        <Radar
-                                            name="Skills"
-                                            dataKey="score"
-                                            stroke="hsl(var(--primary))"
-                                            fill="hsl(var(--primary))"
-                                            fillOpacity={0.3}
-                                        />
-                                    </RadarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* 3. Continue Practice */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Continue Practice</CardTitle>
-                            <CardDescription>Pick up where you left off</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                <div>
-                                    <h3 className="text-lg font-semibold text-foreground mb-1">
-                                        Dynamic Programming
-                                    </h3>
-                                    <p className="text-sm text-muted-foreground">
-                                        Master the fundamentals of DP with practice problems
-                                    </p>
-                                </div>
-                                <ProgressBar current={3} total={10} label="Progress" />
-                                <Button className="w-full" onClick={() => recentEntry ? router.push(`/results?id=${recentEntry.id}`) : router.push("/analyze")}>Continue</Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* 4. Weekly Goals */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Weekly Goals</CardTitle>
-                            <CardDescription>Track your weekly progress</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-6">
-                                <ProgressBar
-                                    current={12}
-                                    total={20}
-                                    label="Problems Solved: 12/20 this week"
+                {/* Skill Breakdown */}
+                <Card className="border-[#E2E8F0] shadow-sm rounded-2xl overflow-hidden min-h-[300px] flex flex-col">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-xl font-bold text-[#0F172A]">Skill Breakdown</CardTitle>
+                        <CardDescription className="text-[#64748B]">Performance across different areas</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1 h-64 pt-6 pb-8">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={skillData}>
+                                <PolarGrid stroke="#E2E8F0" />
+                                <PolarAngleAxis dataKey="subject" tick={{ fill: "#64748B", fontSize: 12 }} />
+                                <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
+                                <Radar
+                                    name="Skills"
+                                    dataKey="score"
+                                    stroke="#0F172A"
+                                    fill="#94A3B8"
+                                    fillOpacity={0.4}
                                 />
-                                <div className="flex justify-between">
-                                    {weeklyActivity.map((item) => (
-                                        <DayCircle key={item.day} day={item.day} active={item.active} />
-                                    ))}
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                            </RadarChart>
+                        </ResponsiveContainer>
+                    </CardContent>
+                </Card>
 
-                    {/* 5. Upcoming Assessments - Full width on mobile, spans both columns on desktop */}
-                    <Card className="md:col-span-2">
-                        <CardHeader>
-                            <CardTitle>Upcoming Assessments</CardTitle>
-                            <CardDescription>Your scheduled tests and reviews</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="divide-y divide-border">
-                                <AssessmentItem
-                                    title="DSA Mock Test"
-                                    date="Tomorrow"
-                                    time="10:00 AM"
-                                />
-                                <AssessmentItem
-                                    title="System Design Review"
-                                    date="Wed"
-                                    time="2:00 PM"
-                                />
-                                <AssessmentItem
-                                    title="HR Interview Prep"
-                                    date="Friday"
-                                    time="11:00 AM"
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
+                {/* Continue Practice */}
+                <Card className="border-[#E2E8F0] shadow-sm rounded-2xl overflow-hidden flex flex-col">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-xl font-bold text-[#0F172A]">Continue Practice</CardTitle>
+                        <CardDescription className="text-[#64748B]">Pick up where you left off</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-6 pb-8">
+                        <h3 className="text-2xl font-extrabold text-[#0F172A] mb-2">Dynamic Programming</h3>
+                        <p className="text-[#64748B]">Master the fundamentals of DP with practice problems</p>
+                    </CardContent>
+                </Card>
 
-                {/* Quick Actions */}
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push("/analyze")}>
-                        <CardContent className="p-6 flex flex-col items-center text-center">
-                            <FileText className="h-10 w-10 text-primary mb-3" />
-                            <h3 className="font-semibold mb-1">Analyze Job Description</h3>
-                            <p className="text-sm text-muted-foreground">Get personalized prep plan</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push("/history")}>
-                        <CardContent className="p-6 flex flex-col items-center text-center">
-                            <History className="h-10 w-10 text-primary mb-3" />
-                            <h3 className="font-semibold mb-1">View History</h3>
-                            <p className="text-sm text-muted-foreground">See all your analyses</p>
-                        </CardContent>
-                    </Card>
-                    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => recentEntry ? router.push(`/results?id=${recentEntry.id}`) : router.push("/analyze")}>
-                        <CardContent className="p-6 flex flex-col items-center text-center">
-                            <Sparkles className="h-10 w-10 text-primary mb-3" />
-                            <h3 className="font-semibold mb-1">Recent Analysis</h3>
-                            <p className="text-sm text-muted-foreground">View latest results</p>
-                        </CardContent>
-                    </Card>
-                </div>
+                {/* Weekly Goals */}
+                <Card className="border-[#E2E8F0] shadow-sm rounded-2xl overflow-hidden flex flex-col">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-xl font-bold text-[#0F172A]">Weekly Goals</CardTitle>
+                        <CardDescription className="text-[#64748B]">Track your weekly progress</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-6 pb-8">
+                        <ProgressBar
+                            current={12}
+                            total={20}
+                            label="Problems Solved: 12/20 this week"
+                        />
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );
