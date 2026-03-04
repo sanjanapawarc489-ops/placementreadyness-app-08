@@ -9,11 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { analyzeJD } from "@/lib/analysis-hardened";
 import { saveToHistory } from "@/lib/storage-hardened";
-import { 
-  FileText, 
-  Building2, 
-  Briefcase, 
-  Sparkles, 
+import {
+  FileText,
+  Building2,
+  Briefcase,
+  Sparkles,
   AlertCircle,
   CheckCircle
 } from "lucide-react";
@@ -51,10 +51,10 @@ export default function AnalyzeJD() {
     try {
       // Analyze the job description
       const analysisResult = analyzeJD(jdText, company, role);
-      
+
       // Save to history with full schema
-      const historyEntry = saveToHistory(company, role, jdText, analysisResult);
-      
+      const historyEntry = (saveToHistory as any)(company, role, jdText, analysisResult);
+
       // Navigate to results page
       router.push(`/results?id=${historyEntry.id}`);
       setSuccess("Analysis completed successfully!");
@@ -161,7 +161,7 @@ export default function AnalyzeJD() {
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="role">Role/Position</Label>
                       <div className="relative">
@@ -192,8 +192,8 @@ export default function AnalyzeJD() {
                     </div>
                   )}
 
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="w-full"
                     disabled={loading || !jdText.trim()}
                   >
@@ -229,7 +229,7 @@ export default function AnalyzeJD() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <span className="text-xs font-semibold text-primary">2</span>
@@ -241,7 +241,7 @@ export default function AnalyzeJD() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <span className="text-xs font-semibold text-primary">3</span>
